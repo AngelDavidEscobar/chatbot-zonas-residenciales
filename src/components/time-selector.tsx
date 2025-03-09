@@ -13,6 +13,7 @@ type TimeSelectorProps = {
 // based on the selected area and date
 const getAvailableTimes = (area: string, date?: Date): string[] => {
   // This is just a mock - in a real app, you'd fetch this from a backend
+  console.log(area, date)
   return [
     "08:00",
     "09:00",
