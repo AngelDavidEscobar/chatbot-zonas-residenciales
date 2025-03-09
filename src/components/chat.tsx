@@ -32,7 +32,8 @@ export function Chat() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      content: "¡Hola! Soy tu asistente para reservar áreas comunes. ¿En qué puedo ayudarte hoy?",
+      content:
+        "¡Hola! Soy tu asistente para reservar áreas comunes. ¿En qué puedo ayudarte hoy?\n\nPuedes elegir una de estas opciones:\n\n1️⃣ Reservar un área común\n2️⃣ Ver mis reservas actuales\n3️⃣ Cancelar una reserva\n4️⃣ Consultar disponibilidad\n5️⃣ Información sobre áreas comunes",
       sender: "bot",
       timestamp: new Date(),
     },
@@ -82,26 +83,56 @@ export function Chat() {
       lowerMessage.includes("reservar") ||
       lowerMessage.includes("reserva") ||
       lowerMessage.includes("apartar") ||
-      lowerMessage.includes("agendar")
+      lowerMessage.includes("agendar") ||
+      lowerMessage.includes("1") ||
+      lowerMessage === "1"
     ) {
       addBotMessage("¡Perfecto! Vamos a hacer una reserva. Primero, ¿qué área común te gustaría reservar?")
       setReservation({ ...reservation, step: "area" })
       setShowAreaSelector(true)
     } else if (
+      lowerMessage.includes("ver reservas") ||
+      lowerMessage.includes("mis reservas") ||
+      lowerMessage.includes("2") ||
+      lowerMessage === "2"
+    ) {
+      addBotMessage("Actualmente no tienes reservas activas. Cuando realices una reserva, podrás verla aquí.")
+    } else if (lowerMessage.includes("cancelar") || lowerMessage.includes("3") || lowerMessage === "3") {
+      addBotMessage(
+        "No tienes reservas activas que puedas cancelar. Cuando realices una reserva, podrás cancelarla desde aquí.",
+      )
+    } else if (lowerMessage.includes("disponibilidad") || lowerMessage.includes("4") || lowerMessage === "4") {
+      addBotMessage(
+        "Para consultar la disponibilidad, primero necesito saber qué área te interesa. Por favor, selecciona un área común:",
+      )
+      setReservation({ ...reservation, step: "area" })
+      setShowAreaSelector(true)
+    } else if (
+      lowerMessage.includes("información") ||
+      lowerMessage.includes("info") ||
+      lowerMessage.includes("5") ||
+      lowerMessage === "5"
+    ) {
+      addBotMessage(
+        "Nuestro conjunto residencial cuenta con las siguientes áreas comunes:\n\n• Piscina: Abierta de 8:00 a 20:00\n• Gimnasio: Abierto 24 horas\n• Salón Social: Disponible para eventos de 8:00 a 22:00\n• Zona de BBQ: Disponible de 10:00 a 20:00\n• Sala de Juegos: Abierta de 9:00 a 21:00\n\n¿Te gustaría reservar alguna de estas áreas?",
+      )
+    } else if (
       lowerMessage.includes("hola") ||
       lowerMessage.includes("buenos días") ||
       lowerMessage.includes("buenas tardes")
     ) {
-      addBotMessage("¡Hola! Soy tu asistente para reservar áreas comunes. Si deseas hacer una reserva, solo dímelo.")
+      addBotMessage(
+        "¡Hola! Soy tu asistente para reservar áreas comunes. Puedes elegir una de estas opciones:\n\n1️⃣ Reservar un área común\n2️⃣ Ver mis reservas actuales\n3️⃣ Cancelar una reserva\n4️⃣ Consultar disponibilidad\n5️⃣ Información sobre áreas comunes",
+      )
     } else if (lowerMessage.includes("gracias") || lowerMessage.includes("muchas gracias")) {
       addBotMessage("¡De nada! Estoy aquí para ayudarte con tus reservas de áreas comunes.")
     } else if (lowerMessage.includes("ayuda") || lowerMessage.includes("como funciona")) {
       addBotMessage(
-        "Para reservar un área común, solo dime que quieres hacer una reserva. Te guiaré paso a paso para seleccionar el área, la fecha y la hora.",
+        "Para reservar un área común, selecciona la opción 1 o escribe 'reservar'. Te guiaré paso a paso para seleccionar el área, la fecha y la hora. También puedes consultar tus reservas actuales, cancelar reservas o ver la disponibilidad de las áreas comunes.",
       )
     } else {
       addBotMessage(
-        "No estoy seguro de entender. Si deseas hacer una reserva de un área común, por favor dímelo directamente.",
+        "No estoy seguro de entender. Por favor, selecciona una de estas opciones:\n\n1️⃣ Reservar un área común\n2️⃣ Ver mis reservas actuales\n3️⃣ Cancelar una reserva\n4️⃣ Consultar disponibilidad\n5️⃣ Información sobre áreas comunes",
       )
     }
   }
@@ -171,15 +202,15 @@ export function Chat() {
               <div className="flex items-start gap-2 max-w-[80%]">
                 {message.sender === "bot" && (
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://www.svgrepo.com/show/389050/bot.svg" alt="Bot"  />
+                    <AvatarImage src="https://www.svgrepo.com/show/389050/bot.svg" alt="Bot" />
                     <AvatarFallback>BOT</AvatarFallback>
                   </Avatar>
                 )}
                 <Card
                   className={`p-3 ${message.sender === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}
                 >
-                  <p>{message.content}</p>
-                  <p className="text-xs opacity-70 mt-1 " suppressHydrationWarning>
+                  <div className="whitespace-pre-line">{message.content}</div>
+                  <p className="text-xs opacity-70 mt-1" suppressHydrationWarning>
                     {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </p>
                 </Card>
