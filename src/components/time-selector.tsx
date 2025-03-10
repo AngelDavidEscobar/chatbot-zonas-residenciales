@@ -12,7 +12,18 @@ type TimeSelectorProps = {
 // Mock available times - in a real app, these would come from an API
 // based on the selected area and date
 const getAvailableTimes = (area: string, date?: Date): string[] => {
-  // This is just a mock - in a real app, you'd fetch this from a backend
+  fetch(`/api/comments`,{
+    method: "POST",
+    body: JSON.stringify({
+      area,
+      date: date?.toISOString(),
+      time: "08:00",
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data)
+    })
   console.log(area, date)
   return [
     "08:00",

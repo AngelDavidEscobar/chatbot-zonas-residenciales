@@ -6,12 +6,46 @@ import { Calendar, Clock, MapPin } from "lucide-react"
 
 type ConfirmationDialogProps = {
   reservation: {
+    celular?: string
     area?: string
     date?: Date
     time?: string
   }
   onConfirm: (confirmed: boolean) => void
 }
+
+const confirmReservation = async (
+  celular: string,
+  area: string,
+  time: string,
+  date?: Date,
+  onConfirm?: (confirmed: boolean) => void
+) => {
+  try {
+    const formattedDate = date?.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+
+    const response = await fetch('/api/reservations', {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        celular,
+        area_comun: area,
+        fecha_reservacion: formattedDate,
+        hora_reservada: time,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Error al confirmar reserva');
+    }
+
+    if (onConfirm) onConfirm(true);
+  } catch (error) {
+    console.error('Error:', error);
+    if (onConfirm) onConfirm(false);
+  }
+};
 
 export function ConfirmationDialog({ reservation, onConfirm }: ConfirmationDialogProps) {
   return (
@@ -50,15 +84,27 @@ export function ConfirmationDialog({ reservation, onConfirm }: ConfirmationDialo
         </p>
       </CardContent>
 
-      <CardFooter className="flex justify-between gap-2 p-4">
+      <CardFooter className="flex justify-between gap-2 p-4 flex-col">
+        <Button
+          className="w-full"
+          onClick={async () => {
+            await confirmReservation(
+              reservation.celular || '3123213211',
+              reservation.area || '',
+              reservation.time || '',
+              reservation.date || new Date(),
+             
+            );
+            onConfirm(true);
+          }}
+        >
+          Confirmar Reserva
+        </Button>
+
         <Button variant="outline" className="w-full" onClick={() => onConfirm(false)}>
           Cancelar
         </Button>
-        <Button className="w-full" onClick={() => onConfirm(true)}>
-          Confirmar Reserva
-        </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }
-
