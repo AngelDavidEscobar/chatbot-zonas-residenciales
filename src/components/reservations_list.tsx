@@ -16,39 +16,73 @@ type Reservation = {
 type ReservationsListProps = {
   onClose: () => void
   onCancel: (id: string) => void
+  cedula: string
 }
 
+const cancelReservation = async (id: string) => {
+  const response = await fetch(`/api/cancelReservations?id=${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
+  if (!response.ok) {
+    throw new Error("Error al cancelar reserva");
+  }
+  return response.json();
+};
 
-export function ReservationsList({ onClose, onCancel, cedula }: ReservationsListProps & { cedula: string }) {
-    const [reservations, setReservations] = useState<Reservation[]>([]);
+export function ReservationsList({ onClose, onCancel, cedula }: ReservationsListProps) {
+  const [reservations, setReservations] = useState<Reservation[]>([]);
 
-    useEffect(() => {
-        const fetchReservations = async () => {
-            try {
-                 console.log(`/api/getUserReservations?cedula=${cedula}`)
-                const response = await fetch(`/api/getUserReservations?cedula=${cedula}`);
-                if (!response.ok) {
-                    throw new Error('Error al obtener reservas');
-                }
-                const reservas = await response.json();
-                console.log(reservas);
-                setReservations(reservas);
-            } catch (error) {
-                console.error('Error al obtener reservas:', error);
-            }
-        };
-
-        fetchReservations();
-    }, [cedula]);
-
-    const formatDate = (date: Date | undefined) => {
-        if (!date) {
-            return "Fecha no seleccionada";
+  useEffect(() => {
+    const fetchReservations = async () => {
+      try {
+        console.log(`/api/getUserReservations?cedula=${cedula}`)
+        const response = await fetch(`/api/getUserReservations?cedula=${cedula}`);
+        if (!response.ok) {
+          throw new Error('Error al obtener reservas');
         }
-        const dateObj = new Date(date);
-        return dateObj.toLocaleDateString();
+        const reservas = await response.json();
+        console.log(reservas);
+        setReservations(reservas);
+      } catch (error) {
+        console.error('Error al obtener reservas:', error);
+      }
+    };
+
+    fetchReservations();
+  }, [cedula]);
+
+  const handleCancelReservation = async (id: string) => {
+    try {
+      await cancelReservation(id);
+      // Actualizar el estado local eliminando la reserva cancelada
+      setReservations((prevReservations) =>
+        prevReservations.filter((reservation) => reservation.id !== id)
+      );
+      onCancel(id); 
+    } catch (error) {
+      console.error('Error al cancelar la reserva:', error);
     }
+  };
+
+  const confirmCancelReservation = (id: string) => {
+    const isConfirmed = window.confirm("¿Estás seguro de que deseas cancelar esta reserva?");
+    if (isConfirmed) {
+      handleCancelReservation(id);
+    }
+  };
+
+  const formatDate = (date: Date | undefined) => {
+    if (!date) {
+      return "Fecha no seleccionada";
+    }
+    const dateObj = new Date(date);
+    return dateObj.toLocaleDateString();
+  };
+
   return (
     <Card className="w-full my-4">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -93,7 +127,11 @@ export function ReservationsList({ onClose, onCancel, cedula }: ReservationsList
                       {reservation.status === "confirmed" ? "Confirmada" : "Pendiente"}
                     </span>
 
-                    <Button variant="destructive" size="sm" onClick={() => onCancel(reservation.id)}>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => confirmCancelReservation(reservation.id)}
+                    >
                       Cancelar
                     </Button>
                   </div>
@@ -104,6 +142,5 @@ export function ReservationsList({ onClose, onCancel, cedula }: ReservationsList
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
-

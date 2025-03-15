@@ -130,7 +130,7 @@ export function Chat() {
       }
       setUserData(prev => ({ ...prev, celular: message }))
       setAuthState("authenticated")
-      addBotMessage("¡Autenticación exitosa! ¿Qué deseas hacer?\n\n1️⃣ Reservar un área común\n2️⃣ Ver mis reservas\n3️⃣ Cancelar reserva\n4️⃣ Disponibilidad\n5️⃣ Información de áreas")
+      addBotMessage("¡Autenticación exitosa! ¿Qué deseas hacer?\n\n1️⃣ Reservar un área común\n2️⃣ Ver y cancelar mis reservas\n3️⃣ Disponibilidad\n4️⃣ Información")
       return
     }
 
@@ -157,18 +157,16 @@ export function Chat() {
     } else if (/^2|ver reservas/i.test(lowerMessage)) {
       addBotMessage("Reservas actuales:.")
       setReservation({ step: "reservations" })
-    } else if (/^3|cancelar/i.test(lowerMessage)) {
-      addBotMessage("No tienes reservas activas para cancelar.")
-    } else if (/^4|disponibilidad/i.test(lowerMessage)) {
+    } else if (/^3|disponibilidad/i.test(lowerMessage)) {
       addBotMessage("Consulta de disponibilidad. Selecciona un área:")
       setReservation({ step: "area" })
-    } else if (/^5|información/i.test(lowerMessage)) {
+    } else if (/^4|información/i.test(lowerMessage)) {
       addBotMessage(
         "Áreas disponibles:\n\n• Piscina (8:00-20:00)\n• Gimnasio (24hrs)\n• Salón Social (8:00-22:00)\n• Zona BBQ (10:00-20:00)\n• Sala de Juegos (9:00-21:00)"
       )
     } else {
       addBotMessage(
-        "Selecciona una opción:\n1️⃣ Reservar\n2️⃣ Mis reservas\n3️⃣ Cancelar\n4️⃣ Disponibilidad\n5️⃣ Información"
+        "Selecciona una opción:\n1️⃣ Reservar\n2️⃣ Ver y cancelar mis reservas\n3️⃣ Disponibilidad\n4️⃣ Información"
       )
     }
   }, [addBotMessage, authState, reservation.step])
@@ -186,7 +184,7 @@ export function Chat() {
   const handleCloseReservations = useCallback(() => {
     setReservation(prev => ({ ...prev, step: "initial" }))
     addBotMessage(
-      "Selecciona una opción:\n1️⃣ Reservar\n2️⃣ Mis reservas\n3️⃣ Cancelar\n4️⃣ Disponibilidad\n5️⃣ Información"
+      "Selecciona una opción:\n1️⃣ Reservar\n2️⃣ Ver y cancelar mis reservas\n3️⃣ Disponibilidad\n4️⃣ Información"
     )
   },[addBotMessage])
 
