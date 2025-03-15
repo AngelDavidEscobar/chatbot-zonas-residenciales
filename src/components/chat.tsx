@@ -233,7 +233,7 @@ export function Chat() {
         <div className="flex items-start gap-2 max-w-[80%]">
           {message.sender === "bot" && (
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/bot-avatar.png" alt="Asistente" />
+              <AvatarImage src="/assets/icons/bot-icon.svg" alt="Asistente" />
               <AvatarFallback>BOT</AvatarFallback>
             </Avatar>
           )}
@@ -245,7 +245,7 @@ export function Chat() {
           </Card>
           {message.sender === "user" && (
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/user-avatar.png" alt="Usuario" />
+              <AvatarImage src="/assets/icons/avatar-default-icon.svg" alt="Usuario" />
               <AvatarFallback>TÚ</AvatarFallback>
             </Avatar>
           )}
