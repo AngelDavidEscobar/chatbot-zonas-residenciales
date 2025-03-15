@@ -7,6 +7,7 @@ import { Calendar, Clock, MapPin } from "lucide-react"
 type ConfirmationDialogProps = {
   reservation: {
     celular?: string
+    cedula?: string
     area?: string
     date?: Date
     time?: string
@@ -16,6 +17,7 @@ type ConfirmationDialogProps = {
 
 const confirmReservation = async (
   celular: string,
+  cedula: string,
   area: string,
   time: string,
   date?: Date,
@@ -29,6 +31,7 @@ const confirmReservation = async (
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         celular,
+        cedula,
         area_comun: area,
         fecha_reservacion: formattedDate,
         hora_reservada: time,
@@ -47,7 +50,9 @@ const confirmReservation = async (
   }
 };
 
-export function ConfirmationDialog({ reservation, onConfirm }: ConfirmationDialogProps) {
+export function ConfirmationDialog({ reservation, onConfirm, cedula, celular }: ConfirmationDialogProps & { cedula: string, celular: string }) {
+  reservation.cedula = cedula;
+  reservation.celular = celular;
   return (
     <Card className="w-full my-4">
       <CardContent className="p-4 pt-6">
@@ -90,6 +95,7 @@ export function ConfirmationDialog({ reservation, onConfirm }: ConfirmationDialo
           onClick={async () => {
             await confirmReservation(
               reservation.celular || '3123213211',
+              reservation.cedula || '1000177177', 
               reservation.area || '',
               reservation.time || '',
               reservation.date || new Date(),

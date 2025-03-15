@@ -9,15 +9,17 @@ export default async function handler(
 ) {
   if (req.method === 'POST') {
     try {
-      const { celular, area_comun, fecha_reservacion, hora_reservada } = req.body;
+      const { celular,cedula, area_comun, fecha_reservacion, hora_reservada } = req.body;
 
       // Validación básica
       if (!celular || !area_comun || !fecha_reservacion || !hora_reservada) {
         return res.status(400).json({ error: 'Faltan datos requeridos' });
       }
 
+
       await db.insert(reservationTable).values({
         celular,
+        cedula,
         area_comun,
         fecha_reservacion,
         hora_reservada,
