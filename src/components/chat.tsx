@@ -155,7 +155,7 @@ export function Chat() {
       addBotMessage("Selecciona el área que deseas reservar:")
       setReservation({ step: "area" })
     } else if (/^2|ver reservas/i.test(lowerMessage)) {
-      addBotMessage("Reservas actuales:.")
+      addBotMessage("Reservas actuales:")
       setReservation({ step: "reservations" })
     } else if (/^3|disponibilidad/i.test(lowerMessage)) {
       addBotMessage("Consulta de disponibilidad. Selecciona un área:")
