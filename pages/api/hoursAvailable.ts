@@ -1,4 +1,3 @@
-// pages/api/reservations.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '@/db';
 import { reservationTable } from '@/db/schema';
@@ -18,8 +17,12 @@ export default async function handler(
           error: 'Faltan parámetros: area y date son requeridos'
         });
       }
-      console.log("area y date", area, date);
-  
+
+      // Obtener la hora actual en formato HH:MM
+      const now = new Date();
+      const currentHour = now.getHours().toString().padStart(2, '0');
+      const currentMinute = now.getMinutes().toString().padStart(2, '0');
+      const currentTime = `${currentHour}:${currentMinute}`;
 
       // Consultar horas reservadas
       const reservas = await db
@@ -32,7 +35,11 @@ export default async function handler(
           )
         );
 
-      const horasReservadas = reservas.map(r => r.hora);
+      // Filtrar horas reservadas para excluir las que ya han pasado
+      const horasReservadas = reservas
+        .map(r => r.hora)
+        .filter(hora => hora >= currentTime);
+
       return res.status(200).json(horasReservadas);
 
     } catch (error) {
