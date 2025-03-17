@@ -15,6 +15,7 @@ type Reservation = {
 
 type ReservationsListProps = {
   onClose: () => void
+  onUpdate: (id: string) => void
   onCancel: (id: string) => void
   cedula: string
 }
@@ -33,19 +34,14 @@ const cancelReservation = async (id: string) => {
   return response.json();
 };
 
-export function ReservationsList({ onClose, onCancel, cedula }: ReservationsListProps) {
+export function ReservationsList({ onClose, onCancel,onUpdate, cedula }: ReservationsListProps) {
   const [reservations, setReservations] = useState<Reservation[]>([]);
 
   useEffect(() => {
     const fetchReservations = async () => {
       try {
-        console.log(`/api/getUserReservations?cedula=${cedula}`)
         const response = await fetch(`/api/getUserReservations?cedula=${cedula}`);
-        if (!response.ok) {
-          throw new Error('Error al obtener reservas');
-        }
         const reservas = await response.json();
-        console.log(reservas);
         setReservations(reservas);
       } catch (error) {
         console.error('Error al obtener reservas:', error);
@@ -127,6 +123,13 @@ export function ReservationsList({ onClose, onCancel, cedula }: ReservationsList
                       {reservation.status === "confirmed" ? "Confirmada" : "Pendiente"}
                     </span>
 
+                      <Button
+                        variant="outline"                        
+                        size="sm"
+                        onClick={() => onUpdate(reservation.id)}
+                      >
+                        Actualizar
+                      </Button>
                     <Button
                       variant="destructive"
                       size="sm"

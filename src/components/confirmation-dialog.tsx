@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Calendar, Clock, MapPin } from "lucide-react"
 
+
 type ConfirmationDialogProps = {
   reservation: {
     celular?: string
@@ -11,7 +12,9 @@ type ConfirmationDialogProps = {
     area?: string
     date?: Date
     time?: string
+    id?: string
   }
+  
   onConfirm: (confirmed: boolean) => void
 }
 
@@ -20,16 +23,21 @@ const confirmReservation = async (
   cedula: string,
   area: string,
   time: string,
+  isUpdating: boolean,
   date?: Date,
-  onConfirm?: (confirmed: boolean) => void
+  id?: string,
+  onConfirm?: (confirmed: boolean) => void,
+  
 ) => {
   try {
     const formattedDate = date?.toISOString().split('T')[0]; // Formato YYYY-MM-DD
-
-    const response = await fetch('/api/reservations', {
-      method: "POST",
+    const url = isUpdating ? `updateReservations` : `reservations`;
+    const response = await fetch(`/api/${url}`, {
+      method: isUpdating ? "PUT" : "POST",
       headers: { 'Content-Type': 'application/json' },
+
       body: JSON.stringify({
+        id,
         celular,
         cedula,
         area_comun: area,
@@ -50,13 +58,19 @@ const confirmReservation = async (
   }
 };
 
-export function ConfirmationDialog({ reservation, onConfirm, cedula, celular }: ConfirmationDialogProps & { cedula: string, celular: string }) {
+export function ConfirmationDialog({ reservation, onConfirm, isUpdatingReservation, cedula, celular }: ConfirmationDialogProps & { isUpdatingReservation: boolean, cedula: string, celular: string}) {
+  
   reservation.cedula = cedula;
   reservation.celular = celular;
   return (
     <Card className="w-full my-4">
       <CardContent className="p-4 pt-6">
-        <h3 className="font-medium text-lg mb-4 text-center">Confirma tu reserva</h3>
+        {isUpdatingReservation ? (
+          <h3 className="font-medium text-lg mb-4 text-center">Actualiza tu reserva</h3>
+        ) : (
+          <h3 className="font-medium text-lg mb-4 text-center">Confirma tu reserva</h3>
+        )}
+        
 
         <div className="space-y-4">
           <div className="flex items-center gap-3">
@@ -94,14 +108,17 @@ export function ConfirmationDialog({ reservation, onConfirm, cedula, celular }: 
           className="w-full"
           onClick={async () => {
             await confirmReservation(
-              reservation.celular || '3123213211',
-              reservation.cedula || '1000177177', 
+
+              reservation.celular || '',
+              reservation.cedula || '', 
               reservation.area || '',
               reservation.time || '',
+              isUpdatingReservation,
               reservation.date || new Date(),
-             
+              reservation.id || '',
             );
             onConfirm(true);
+            
           }}
         >
           Confirmar Reserva

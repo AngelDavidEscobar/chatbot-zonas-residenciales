@@ -17,6 +17,7 @@ import { z } from "zod"
 import { ReservationsList } from "./reservations_list"
 
 
+
 type Message = {
   id: string
   content: string
@@ -25,6 +26,7 @@ type Message = {
 }
 
 type ReservationState = {
+  id?: string
   area?: string
   date?: Date
   time?: string
@@ -46,9 +48,9 @@ export function Chat() {
   const [userData, setUserData] = useState<{ cedula?: string; celular?: string }>({})
   const [isProcessing, setIsProcessing] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string >('')
-
+  const [isUpdatingReservation, setIsUpdatingReservation] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-
+ 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [])
@@ -188,13 +190,20 @@ export function Chat() {
     )
   },[addBotMessage])
 
-  //esto esta pendiente por hacer
+ 
   const handleCancelReservation = useCallback((id: string) => {
-    console.log(id);
     setReservation(prev => ({ ...prev, step: "reservations" }))
     addBotMessage(`Cancelando reserva: ${id}`)
   },[addBotMessage])
 
+  const handleUpdateReservation = useCallback((id: string) => {
+    // faltan cosas :)
+    console.log(id);
+    setReservation(prev => ({ ...prev, id: id, step: "area" }))
+    setIsUpdatingReservation(true);
+    
+    addBotMessage(`Actualizando reserva: ${id}`)
+  },[addBotMessage])
 
   const handleTimeSelect = useCallback((time: string) => {
     setReservation(prev => ({ ...prev, time, step: "confirmation" }))
@@ -266,6 +275,7 @@ export function Chat() {
       <ConfirmationDialog
         reservation={reservation}
         onConfirm={handleConfirmation}
+        isUpdatingReservation={isUpdatingReservation}
         cedula={userData.cedula || ''}
         celular={userData.celular || ''}
       />
@@ -273,7 +283,8 @@ export function Chat() {
     {reservation.step === "reservations" && 
     <ReservationsList 
     onClose={handleCloseReservations} 
-    onCancel={handleCancelReservation} 
+    onCancel={handleCancelReservation}
+    onUpdate={handleUpdateReservation}
     cedula={userData.cedula || ''} />}
 
     {isProcessing && (

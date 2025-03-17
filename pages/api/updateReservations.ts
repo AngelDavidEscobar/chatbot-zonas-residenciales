@@ -12,7 +12,7 @@ export default async function updateReservationHandler(
     }
 
     try {
-        const { id, celular, cedula, area_comun, fecha_reservacion, hora_reservada, estado_reservacion } = req.body;
+        const { id, celular, area_comun, fecha_reservacion, hora_reservada } = req.body;
 
         if (!id) {
             return res.status(400).json({ error: 'El ID de la reserva es requerido' });
@@ -20,11 +20,10 @@ export default async function updateReservationHandler(
 
         const updateData: Partial<typeof reservationTable> = {};
         if (celular) updateData.celular = celular;
-        if (cedula) updateData.cedula = cedula;
         if (area_comun) updateData.area_comun = area_comun;
         if (fecha_reservacion) updateData.fecha_reservacion = fecha_reservacion;
         if (hora_reservada) updateData.hora_reservada = hora_reservada;
-        if (estado_reservacion) updateData.estado_reservacion = estado_reservacion;
+      
 
         if (Object.keys(updateData).length === 0) {
             return res.status(400).json({ error: 'No hay datos para actualizar' });
